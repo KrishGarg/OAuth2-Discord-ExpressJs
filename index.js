@@ -3,7 +3,7 @@
   when in development, as most probably in production,
   they will be available globally.
 */
-if (process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
