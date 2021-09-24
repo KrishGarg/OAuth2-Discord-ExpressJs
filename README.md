@@ -2,6 +2,15 @@
 
 This is a sample app on how you can implement discord oauth2 on the backend.
 
+# Clean Version
+
+This is the clean branch with all the comments removed from index.js.
+If you want to clone just this branch, you can use degit.
+
+```
+npx degit KrishGarg/OAuth2-Discord-ExpressJs#clean
+```
+
 ## Environment Variables:
 
 |   Variable    | Default | Description                                        | Required? |
