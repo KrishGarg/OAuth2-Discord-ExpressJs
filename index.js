@@ -228,7 +228,7 @@ app.get("/api/discord/refresh", async (req, res) => {
       Updating the local cache for testing purposes.
     */
     testUserData = data;
-    testUserData.expiresOn = new Date(Date.now() + data.expires_in);
+    testUserData.expiresOn = new Date(Date.now() + data.expires_in * 1000);
     testUserData.authHeader = `${data.token_type} ${data.access_token}`;
 
     /*
