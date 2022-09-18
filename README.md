@@ -26,3 +26,5 @@ npx degit KrishGarg/OAuth2-Discord-ExpressJs#clean
 You can get all the above constants from [discord developer portal](https://discord.com/developers/applications). For detailed information on the available scopes, you can checkout the [discord documentation](https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes).
 
 The [index.js](https://github.com/KrishGarg/OAuth2-Discord-ExpressJs/blob/master/index.js) file is well commented/documented.
+
+---
