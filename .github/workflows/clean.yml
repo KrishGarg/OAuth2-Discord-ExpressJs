@@ -1,0 +1,19 @@
+name: clean
+on:
+  push:
+    branches:
+      - "clean"
+  pull_request:
+    branches:
+      - "clean"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+      - run: node clean
+      - uses: EndBug/add-and-commit@v9
