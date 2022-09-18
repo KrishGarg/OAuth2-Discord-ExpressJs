@@ -2,6 +2,11 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
+/*
+
+testing by adding comments
+
+*/
 
 const express = require("express");
 const axios = require("axios").default;
@@ -23,15 +28,12 @@ const scope = process.env.SCOPE;
 
 let testUserData = null;
 
-
 let testUserState = null;
 
-
 app.get("/", (req, res) => {
-  
   const randomState = crypto.randomBytes(20).toString("hex");
   testUserState = randomState;
-  
+
   res.redirect(oauth2Url + `&state=${randomState}`);
 });
 
@@ -41,7 +43,6 @@ app.get("/api/discord/callback", async (req, res) => {
     return console.log(req.query.error_description);
   }
 
-  
   if (testUserState !== decodeURIComponent(req.query.state)) {
     if (testUserData) {
       return res.send(
@@ -53,7 +54,6 @@ app.get("/api/discord/callback", async (req, res) => {
   }
   testUserState = null;
 
-  
   const code = req.query.code;
 
   const params = new URLSearchParams();
