@@ -2,11 +2,7 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-/*
 
-testing by adding comments
-
-*/
 
 const express = require("express");
 const axios = require("axios").default;
