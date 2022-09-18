@@ -2,9 +2,19 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
+/*
+  Importing:
+    Express for the main app.
+    Axios for http api requests to the discord api.
+    URLSearchParams to send data to the api.
+      To know why not json, https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-urls
+    Crypto for generating random strings used to preventing duplicate auth requests and CSRF attacks
+      for more information (never skimp on security!): https://discord.com/developers/docs/topics/oauth2#state-and-security
+*/
 const express = require("express");
 const axios = require("axios").default;
 const { URLSearchParams } = require("url");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,8 +31,32 @@ const scope = process.env.SCOPE;
 
 let testUserData = null;
 
+/*
+  Holds the random string that will be used to validate
+  the OAuth2 authentication. In your app, you won't have
+  this, because the server needs to be able to handle
+  multiple users and requests simultaneously.
+*/
+let testUserState = null;
+
+/*
+  The entry endpoint.
+*/
 app.get("/", (req, res) => {
-  res.redirect(oauth2Url);
+  /*
+    Here we are generating a random string, which will be appended
+    to the OAuth2 URL as the 'state' param.
+  */
+  const randomState = crypto.randomBytes(20).toString("hex");
+  testUserState = randomState;
+  /*
+    Here we are directly redirecting the user to the OAuth2
+    url (provided by discord). In your app, you can either 
+    directly store the OAuth2 url in your front-end, or make 
+    this endpoint return the OAuth2 url and in your front-end.
+    You can redirect the user to the url on some button click too.
+  */
+  res.redirect(oauth2Url + `&state=${randomState}`);
 });
 
 app.get("/api/discord/callback", async (req, res) => {
@@ -31,6 +65,29 @@ app.get("/api/discord/callback", async (req, res) => {
     return console.log(req.query.error_description);
   }
 
+  /*
+    The state param we appended to the OAuth2 URL has been forwarded
+    to the response. Now we can check if the forwarded param matches
+    the state param we appended. If it doesn't match, we have either
+    already used it or someone attempted to perform a CSRF attack.
+  */
+  if (testUserState !== decodeURIComponent(req.query.state)) {
+    if (testUserData) {
+      return res.send(
+        `You're already logged in, ${userData.username}#${userData.discriminator}! The access token will expire on ${testUserData.expiresOn}.`
+      );
+    } else {
+      return res.redirect("/");
+    }
+  }
+  testUserState = null;
+
+  /*
+    If it was successful, discord will redirect to this 
+    endpoint, with a query parameter of code containing
+    a code which we can exchange for an access token of
+    the user.  
+  */
   const code = req.query.code;
 
   const params = new URLSearchParams();
@@ -80,7 +137,7 @@ app.get("/api/discord/refresh", async (req, res) => {
     const data = response.data;
 
     testUserData = data;
-    testUserData.expiresOn = new Date(Date.now() + data.expires_in);
+    testUserData.expiresOn = new Date(Date.now() + data.expires_in * 1000);
     testUserData.authHeader = `${data.token_type} ${data.access_token}`;
 
     res.send(
