@@ -15,5 +15,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "14"
-      - run: node clean
+      - run: npm run clean
       - uses: EndBug/add-and-commit@v9
